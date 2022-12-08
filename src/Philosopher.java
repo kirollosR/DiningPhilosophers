@@ -1,7 +1,7 @@
 public class Philosopher implements Runnable{
-    private int timesToEat = 5;
+    private int timesToEat = 1;
     private int SleepTime = 1000;
-    private Monitor monitor;
+    final Monitor monitor;
     private int id;
     public Thread t;
 
@@ -22,7 +22,7 @@ public class Philosopher implements Runnable{
         while(count <= timesToEat){
             monitor.pickUp(id);
             System.out.format("Philosopher %d eating (%d times)\n", id, count);
-            // Sleep a little bit.
+            // Sleep a bit.
             try {
                 Thread.sleep(SleepTime);
             } catch (InterruptedException e) {}

@@ -10,7 +10,7 @@ public class DiningPhilosopher {
         Philosopher [] p = new Philosopher[numOfPhilosophers];
 
         for(int i = 0; i < numOfPhilosophers; i++)
-            p[i] = new Philosopher(i,chopistics[(i+numOfPhilosophers-1)%numOfPhilosophers],chopistics[(i+1)%numOfPhilosophers],monitor);
+            p[i] = new Philosopher(i,chopistics[i],chopistics[(i+numOfPhilosophers-1)%numOfPhilosophers],monitor);
 
         for(int i = 0; i < numOfPhilosophers; i++)
             try {
@@ -21,6 +21,5 @@ public class DiningPhilosopher {
 
         System.out.println("");
         System.out.println("Dinner is over!");
-
     }
 }
