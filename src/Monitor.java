@@ -25,52 +25,46 @@ public class Monitor {
         this.chopsticks = c;
     }
 
+    public void test(int i){
+        if((state[(i+numberOfPhilosophers-1)%numberOfPhilosophers] != States.EATING) &&
+                (state[(i+1)%numberOfPhilosophers] != States.EATING) && state[i] == States.HUNGRY){
+            state[i] = States.EATING;
+            cond[i].signal();
+        }
+    }
     public void pickUp(int i){
         lock.lock();
         try{
             state[i] = States.HUNGRY;
-            if((state[(i+numberOfPhilosophers-1)%numberOfPhilosophers] != States.EATING) &&
-               (state[(i+1)%numberOfPhilosophers] != States.EATING)){
-//            if((!chopsticks[i].isUsed()) && (!chopsticks[(i + numberOfPhilosophers - 1) % numberOfPhilosophers].isUsed())){
-                eat(i);
-            }else{
-                try{
-    //                System.out.format("***Philosopher %d trying to eat\n", i);
-                    cond[i].await();
-                    eat(i);
-                }catch (InterruptedException e){
-                    e.printStackTrace();
-                }
+            test(i);
+            if(state[i] != States.EATING){
+                cond[i].await();
             }
-        }finally {
+            eat(i);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
             lock.unlock();
         }
     }
-
+    public void eat(int i){
+//        state[i] = States.EATING;
+        chopsticks[(i+numberOfPhilosophers-1) % numberOfPhilosophers].take();
+        chopsticks[i].take();
+    }
     public void putDown(int i){
         lock.lock();
         try {
             think(i);
             // Tell the right neighbor about the possibility to eat.
             int right = (i + numberOfPhilosophers - 1)%numberOfPhilosophers;
-            int right2 = (i + numberOfPhilosophers - 2)%numberOfPhilosophers;
-            if( (state[right] == States.HUNGRY) && (state[right2] != States.EATING) ){
-                cond[right].signal();
-            }
-            // Tell the left neighbor about the possibility to eat
-            if( (state[(i+1)%numberOfPhilosophers] == States.HUNGRY) && (state[(i+2)%numberOfPhilosophers] != States.EATING) ){
-                cond[(i+1)%numberOfPhilosophers].signal();
-            }
+            int left = (i+1)%numberOfPhilosophers;
+            test(right);
+            test(left);
         }
         finally {
             lock.unlock();
         }
-    }
-
-    public void eat(int i){
-        state[i] = States.EATING;
-        chopsticks[(i+numberOfPhilosophers-1) % numberOfPhilosophers].take();
-        chopsticks[i].take();
     }
 
     public void think(int i){

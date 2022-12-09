@@ -1,5 +1,5 @@
 public class Philosopher implements Runnable{
-    private int timesToEat = 1;
+    private int timesToEat = 5;
     private int SleepTime = 1000;
     final Monitor monitor;
     private int id;
